@@ -9,7 +9,7 @@ FRAME_H = 480
 TIMEOUT = 25
 COLOR_SEGMENT = {
     'helmet': {
-        'upper': np.array([38, 255, 255], np.uint8), 'lower': np.array([22, 0, 0], np.uint8)
+        'upper': np.array([38, 255, 255], np.uint8), 'lower': np.array([20, 220, 0], np.uint8)
     },
 
     'glasses':
@@ -18,14 +18,14 @@ COLOR_SEGMENT = {
     },
     'groove':
     {
-        'upper': np.array([75, 255, 255], np.uint8), 'lower': np.array([38, 0, 0], np.uint8)
+        'upper': np.array([80, 255, 255], np.uint8), 'lower': np.array([50, 220, 0], np.uint8)
     },
     'boots': {
-        'upper': np.array([179, 255, 255], np.uint8), 'lower': np.array([160, 0, 0], np.uint8)
+        'upper': np.array([25, 255, 255], np.uint8), 'lower': np.array([0, 220, 0], np.uint8)
 
     },
 
     'coverall': {
-        'upper': np.array([160, 255, 255], np.uint8), 'lower': np.array([130, 0, 0], np.uint8)
+        'upper': np.array([155, 255, 255], np.uint8), 'lower': np.array([135, 220, 0], np.uint8)
     }
 }
