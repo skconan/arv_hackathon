@@ -29,8 +29,9 @@ def check_is_object(binary):
     return ratio >= 0.4
 
 def object_detection(img):
+    print("Object Detection")
     height, width, _ = img.shape
-    
+    print("H W:",height, width)
     lower_bound = {
         'helmet': 0,
         'glasses': 0,
@@ -51,15 +52,17 @@ def object_detection(img):
     for k in lower_bound.keys():
         lower = lower_bound[k]
         upper = upper_bound[k]
-        roi = img.copy()[:width, lower:upper]
+        print("ROI",lower,upper)
+        roi = img.copy()[lower:upper,: ]
         
+        print("ROI Shape",roi.shape)
         hsv = cv.cvtColor(roi.copy(), cv.COLOR_BGR2HSV)
         color_th = cv.inRange(hsv.copy(), COLOR_SEGMENT[k]['lower'], COLOR_SEGMENT[k]['upper'])
         is_obj = check_is_object(color_th)
 
         if is_obj:
             cv.rectangle(result, (0,lower), (width, upper), (255,255,0),-1)
-            # update_payload()        
+            update_payload(k)        
     
 
 def color_detection(img):
@@ -118,12 +121,12 @@ def main():
 
     while True:
         print("In loop")
+        _, image = recv_image(socket)
         try:
-            _, image = recv_image(socket)
-            img = np.array(image)[:, :, ::-1]
-            if img is None:
+            if image is None:
                 print("Image is None")
                 break
+            img = np.array(image)[:, :, ::-1]
         except:
             print("Error exception")
             continue
@@ -172,8 +175,8 @@ def main():
             cv.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 2)
             roi = img[y:y+h, x:x+w]
             predicted = predict(roi)
-            payload = object_detection(predicted)
-            update_payload(payload)
+            object_detection(predicted)
+            # update_payload(payload)
             if time.time() - start_time > TIMEOUT:
                 submission(reponse_payload,is_test=True)
 
