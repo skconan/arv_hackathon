@@ -34,14 +34,14 @@ def object_detection(img):
     print("H W:",height, width)
     lower_bound = {
         'helmet': 0,
-        'glasses': 0,
+        # 'glasses': 0,
         'coverall': int(height*0.15),
         'boots': int(height*0.75),
         'groove': int(height*0.25),
     }
     upper_bound = {
         'helmet': int(height*0.1),
-        'glasses': int(height*0.1),
+        # 'glasses': int(height*0.1),
         'coverall': int(height*0.8),
         'boots': int(height),
         'groove': int(height*0.7),
@@ -57,13 +57,25 @@ def object_detection(img):
         
         print("ROI Shape",roi.shape)
         hsv = cv.cvtColor(roi.copy(), cv.COLOR_BGR2HSV)
+        cv.imshow("HSV",hsv)
         color_th = cv.inRange(hsv.copy(), COLOR_SEGMENT[k]['lower'], COLOR_SEGMENT[k]['upper'])
-        is_obj = check_is_object(color_th)
+        color_th = cv.erode(color_th,get_kernel())
+        _, contours, _ = cv.findContours(
+            color_th, cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
+        result = img.copy()
+        cv.drawContours(result, contours, -1, (255, 255, 0), 2)
 
-        if is_obj:
-            cv.rectangle(result, (0,lower), (width, upper), (255,255,0),-1)
-            update_payload(k)        
-    
+        for cnt in contours:
+            area = cv.contourArea(cnt)
+            # if  k=="coverall":
+            if area < (width * (upper-lower))*0.7:
+                continue 
+            is_obj = check_is_object(color_th)
+            
+            if is_obj:
+                cv.rectangle(result, (0,lower), (width, upper), (255,255,0),-1)
+                update_payload(k)        
+                cv.waitKey(1000)        
 
 def color_detection(img):
     lower = [160, 0, 0]
@@ -99,6 +111,7 @@ def predict(image):
     pred = cv.cvtColor(pred.copy(), cv.COLOR_RGB2BGR)
     pred = pred * 255.
     pred = pred.astype('uint8')
+    cv.imshow("Prediction",pred)
     return pred
 
 
@@ -107,9 +120,10 @@ def update_payload(name):
     global reponse_payload
     print("Update Payload")
     reponse_payload['ppe'][name] = True
-    print(reponse_payload['ppe'][name])
+    print(name,reponse_payload['ppe'][name])
 
 def main():
+    global reponse_payload
     start_time = time.time()
 
     print("Socket initialize")
@@ -180,7 +194,7 @@ def main():
             if time.time() - start_time > TIMEOUT:
                 submission(reponse_payload,is_test=True)
 
-
+        print(reponse_payload)
         cv.imshow("obj", obj)
         cv.imshow("person", person)
         cv.imshow("result", result)
