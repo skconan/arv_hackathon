@@ -28,4 +28,4 @@ def submission(payload, is_test=False, host='192.168.1.200', port='3000'):
         return False
 
 
-submission(is_test=True)
+# submission(is_test=True)
