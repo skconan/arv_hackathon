@@ -28,6 +28,8 @@ def send_image(socket, image, image_id, timestamp, flags=0):
 
 # synchronous manner
 def recv_image(socket, flags=0):
+    print("Recieve Image")
     md = socket.recv_json(flags=flags)
     msg = socket.recv(flags=flags, copy=True)
+    print("Successfully")
     return md, Image.open(io.BytesIO(msg))
