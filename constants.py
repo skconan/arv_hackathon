@@ -6,12 +6,13 @@ IMG_PATH = WS_PATH + r"\images"
 PERSON_PATH = WS_PATH + r"\person"
 FRAME_W = 640
 FRAME_H = 480
+TIMEOUT = 25
 COLOR_SEGMENT = {
     'helmet': {
         'upper': np.array([38, 255, 255], np.uint8), 'lower': np.array([22, 0, 0], np.uint8)
     },
 
-    'grasses':
+    'glasses':
     {
         'upper': np.array([130, 255, 255], np.uint8), 'lower': np.array([75, 0, 0], np.uint8)
     },
@@ -20,14 +21,11 @@ COLOR_SEGMENT = {
         'upper': np.array([75, 255, 255], np.uint8), 'lower': np.array([38, 0, 0], np.uint8)
     },
     'boots': {
-
-        # Boot
         'upper': np.array([179, 255, 255], np.uint8), 'lower': np.array([160, 0, 0], np.uint8)
 
     },
 
     'coverall': {
-
         'upper': np.array([160, 255, 255], np.uint8), 'lower': np.array([130, 0, 0], np.uint8)
     }
 }
