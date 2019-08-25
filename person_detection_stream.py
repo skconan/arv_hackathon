@@ -9,7 +9,7 @@ from keras.models import load_model
 from submission import submission
 import time
 
-model_file = MODEL_PATH + r"/model-color-obj-bg.hdf5"
+model_file = MODEL_PATH + r"/model-118-0.0052.hdf5"
 model = load_model(model_file)
 reponse_payload = {
     "scene_no": 1,
@@ -40,6 +40,7 @@ def object_detection(img):
     }
     upper_bound = {
         'helmet': int(height*0.1),
+        'glasses': int(height*0.1),
         'coverall': int(height*0.8),
         'boots': int(height),
         'groove': int(height*0.7),
@@ -53,12 +54,12 @@ def object_detection(img):
         roi = img.copy()[:width, lower:upper]
         
         hsv = cv.cvtColor(roi.copy(), cv.COLOR_BGR2HSV)
-        _,color_th = cv.inRange(hsv.copy(), COLOR_SEGMENT[k]['lower'], COLOR_SEGMENT[k]['upper'])
+        color_th = cv.inRange(hsv.copy(), COLOR_SEGMENT[k]['lower'], COLOR_SEGMENT[k]['upper'])
         is_obj = check_is_object(color_th)
 
         if is_obj:
-            cv.rectangle(result, (0,lower), (width, upper))
-        update_payload()        
+            cv.rectangle(result, (0,lower), (width, upper), (255,255,0),-1)
+            # update_payload()        
     
 
 def color_detection(img):
@@ -81,6 +82,7 @@ def capture():
 
 def predict(image):
     global model
+    print("prediction")
     rows, cols, ch = image.shape
     frame = image.copy()
     frame = cv.cvtColor(frame.copy(), cv.COLOR_BGR2RGB)
@@ -100,7 +102,9 @@ def predict(image):
 
 def update_payload(name):
     global reponse_payload
+    print("Update Payload")
     reponse_payload['ppe'][name] = True
+    print(reponse_payload['ppe'][name])
 
 def main():
     start_time = time.time()
@@ -113,17 +117,19 @@ def main():
     get_bg = False
 
     while True:
+        print("In loop")
         try:
             _, image = recv_image(socket)
             img = np.array(image)[:, :, ::-1]
-
             if img is None:
                 print("Image is None")
                 break
         except:
+            print("Error exception")
             continue
 
         if not get_bg:
+            print("Get Background")
             bg = img.copy()
             bg = cv.cvtColor(bg, cv.COLOR_BGR2GRAY)
             get_bg = True
